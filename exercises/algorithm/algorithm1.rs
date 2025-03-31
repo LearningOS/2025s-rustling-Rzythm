@@ -2,11 +2,9 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
-use std::vec::*;
 
 #[derive(Debug)]
 struct Node<T> {
@@ -29,13 +27,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: PartialOrd+ Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: PartialOrd+ Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -71,12 +69,38 @@ impl<T> LinkedList<T> {
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut merged = LinkedList::<T>::new();
+
+        let mut la = list_a.start;
+        let mut lb = list_b.start;
+
+        while la.is_some() && lb.is_some() {
+            unsafe {
+                if la.unwrap().as_ref().val < lb.unwrap().as_ref().val {
+                    merged.add(la.unwrap().as_ref().val.clone());
+                    la = la.unwrap().as_ref().next;
+                } else {
+                    merged.add(lb.unwrap().as_ref().val.clone());
+                    lb = lb.unwrap().as_ref().next;
+                }
+            }
         }
+
+        while la.is_some() {
+            unsafe {
+                merged.add(la.unwrap().as_ref().val.clone());
+                la = la.unwrap().as_ref().next;
+            }
+        }
+
+        while lb.is_some() {
+            unsafe {
+                merged.add(lb.unwrap().as_ref().val.clone());
+                lb = lb.unwrap().as_ref().next;
+            }
+        }
+
+        merged	
 	}
 }
 
